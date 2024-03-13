@@ -51,7 +51,7 @@ function App() {
   return payments.length > 0 ? (
     <div className="flex flex-col m-8 gap-8 w-screen items-center">
       <div className="flex flex-col gap-1 border border-green-800 rounded-md py-4 px-8">
-        <h1 className="text-2xl text-green-800">
+        <h1 className="text-2xl text-green-800 mb-3">
           Funnel {selectedInstitution && `(${selectedInstitution})`}
         </h1>
         <FunnelPIS payments={filteredPayment ? filteredPayment : payments} />

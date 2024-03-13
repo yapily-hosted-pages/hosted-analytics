@@ -51,7 +51,7 @@ export const FunnelPIS = ({ payments }) => {
       </div>
 
       <div className="flex flex-col gap-3">
-        <div className="flex flex-col gap-1">
+        {submittedRedirectCount > 0 && (
           <div className="flex flex-row gap-3">
             <div className="p-2 h-28 w-48 flex justify-center items-center border border-green-800 rounded-md bg-green-50 text-center text-sm">
               Redirect institutions submitted: {submittedRedirectCount} (
@@ -81,8 +81,9 @@ export const FunnelPIS = ({ payments }) => {
               %)
             </div>
           </div>
-        </div>
-        <div className="flex flex-col gap-1">
+        )}
+
+        {submittedEmbeddedCount > 0 && (
           <div className="flex flex-row gap-3">
             <div className="p-2 h-28 w-48 flex justify-center items-center border border-green-800 rounded-md bg-green-50 text-center text-sm">
               Embedded institutions submitted: {submittedEmbeddedCount} (
@@ -112,8 +113,10 @@ export const FunnelPIS = ({ payments }) => {
               %)
             </div>
           </div>
-        </div>
-        <div className="flex flex-col gap-1">
+        )}
+
+        {((submittedEmbeddedCount > 0 && submittedRedirectCount > 0) ||
+          (submittedEmbeddedCount === 0 && submittedRedirectCount === 0)) && (
           <div className="flex flex-row gap-3">
             <div className="p-2 h-28 w-48 flex justify-center items-center border border-green-800 rounded-md bg-green-50 text-center text-sm">
               Total institutions submitted: {submittedCount} (
@@ -138,7 +141,7 @@ export const FunnelPIS = ({ payments }) => {
               %)
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
