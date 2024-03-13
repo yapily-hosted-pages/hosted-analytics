@@ -22,7 +22,12 @@ const JsonDropzone = ({ onJsonDropped }) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   return (
-    <div {...getRootProps()} className="border-2 border-dashed p-4 rounded-md">
+    <div
+      {...getRootProps()}
+      className={`border-2 border-dashed p-4 rounded-md ${
+        isDragActive ? "border-green-200" : ""
+      }`}
+    >
       <input {...getInputProps()} />
       <p>Drag and drop the logs here to see the funnel and bank distribution</p>
     </div>

@@ -16,16 +16,28 @@ function App() {
     setPayments(computePIS(json));
   };
 
-  const bankCountMap = payments
-    .filter(({ institution }) => institution)
-    .reduce((banks, payment) => {
-      banks.set(payment.institution, (banks.get(payment.institution) || 0) + 1);
-      return banks;
-    }, new Map());
-
   const bankCounts = [
-    ...bankCountMap.keys().map((bank) => [bank, bankCountMap.get(bank)]),
-  ].sort((b1, b2) => b2[1] - b1[1]);
+    ...payments
+      .filter(({ institution }) => institution)
+      .reduce((banks, payment) => {
+        const bank = banks.get(payment.institution) || {
+          id: payment.institution,
+          total: 0,
+          completed: 0,
+        };
+        bank.total++;
+        if (
+          payment.steps.includes("payment_executed") ||
+          (payment.isEmbedded &&
+            payment.steps.includes("authorisation_updated"))
+        ) {
+          bank.completed++;
+        }
+        banks.set(payment.institution, bank);
+        return banks;
+      }, new Map())
+      .values(),
+  ].sort((a, b) => b.total - a.total);
 
   const [cmd, { start, end }, filename] = createLogsQuery(
     applicationId,
@@ -37,9 +49,11 @@ function App() {
     : null;
 
   return payments.length > 0 ? (
-    <div className="flex flex-col m-8 gap-8">
+    <div className="flex flex-col m-8 gap-8 w-screen items-center">
       <div className="flex flex-col gap-1 border border-green-800 rounded-md py-4 px-8">
-        <h1 className="text-2xl text-green-800">Funnel</h1>
+        <h1 className="text-2xl text-green-800">
+          Funnel {selectedInstitution && `(${selectedInstitution})`}
+        </h1>
         <FunnelPIS payments={filteredPayment ? filteredPayment : payments} />
       </div>
       <div className="flex flex-row gap-8">
@@ -55,17 +69,17 @@ function App() {
           ) : (
             <div className="px-2 py-1 text-gray-500">Click bank to filter</div>
           )}
-          {bankCounts.map(([bank, count]) => (
+          {bankCounts.map(({ id, total, completed }) => (
             <div
-              key={bank}
+              key={id}
               className="flex flex-col border px-2 py-1 cursor-pointer rounded-md hover:bg-gray-50 mt-2"
-              onClick={() => setSelectedInstitution(bank)}
+              onClick={() => setSelectedInstitution(id)}
             >
-              {bank}: {count}
+              {id}: {total} ({Math.floor((completed / total) * 100)}%)
             </div>
           ))}
         </div>
-        <div className="flex flex-col border border-green-800 rounded-md py-4 px-8 max-w-xl">
+        <div className="flex flex-col border border-green-800 rounded-md pt-4 pb-8 px-8 max-w-2xl h-fit">
           <h1 className="text-2xl text-green-800">Looker</h1>
           <p className="my-3">
             To understand the complete E2E conversion rate, please use the
