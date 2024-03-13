@@ -4,7 +4,7 @@ import { computePIS } from "./lib/compute";
 import { FunnelPIS } from "./FunnelPIS";
 import lookerScreenshot from "./assets/looker.png";
 import { createLookerUrl } from "./lib/looker";
-import { createLogsQuery } from "./lib/logs";
+import { createErrorLogsUrl, createLogsQuery } from "./lib/logs";
 
 function App() {
   const [payments, setPayments] = useState([]);
@@ -55,6 +55,12 @@ function App() {
           Funnel {selectedInstitution && `(${selectedInstitution})`}
         </h1>
         <FunnelPIS payments={filteredPayment ? filteredPayment : payments} />
+        <a
+          className="text-red-500 hover:text-red-800 mt-2"
+          href={createErrorLogsUrl(applicationId, lastNDays)}
+        >
+          Open Error Logs in Cloud Console
+        </a>
       </div>
       <div className="flex flex-row gap-8">
         <div className="flex flex-col flex-grow border border-green-800 rounded-md py-4 px-8">
