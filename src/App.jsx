@@ -58,6 +58,7 @@ function App() {
         <a
           className="text-red-500 hover:text-red-800 mt-2"
           href={createErrorLogsUrl(applicationId, lastNDays)}
+          target="_blank"
         >
           Open Error Logs in Cloud Console
         </a>
