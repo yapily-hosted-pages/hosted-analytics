@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 
-const JsonDropzone = ({ onJsonDropped }) => {
+export const JsonDrop = ({ onDropped, label }) => {
   const onDrop = useCallback((acceptedFiles) => {
     acceptedFiles.forEach((file) => {
       const reader = new FileReader();
@@ -9,7 +9,7 @@ const JsonDropzone = ({ onJsonDropped }) => {
       reader.onload = () => {
         try {
           const json = JSON.parse(reader.result);
-          onJsonDropped(json);
+          onDropped(json);
         } catch (err) {
           console.error("Error parsing JSON file:", err);
         }
@@ -29,9 +29,7 @@ const JsonDropzone = ({ onJsonDropped }) => {
       }`}
     >
       <input {...getInputProps()} />
-      <p>Drag and drop the logs here to see the funnel and bank distribution</p>
+      <p>{label}</p>
     </div>
   );
 };
-
-export default JsonDropzone;
