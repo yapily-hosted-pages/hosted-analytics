@@ -23,7 +23,7 @@ export const PaymentsDashboard = ({ payments, applicationId, start, end }) => {
     <div className="flex flex-col m-8 gap-8 w-screen">
       <Container>
         <Title>
-          Funnel {selectedInstitution && `(${selectedInstitution})`}
+          Payments Funnel {selectedInstitution && `(${selectedInstitution})`}
         </Title>
         <Funnel
           product="Payment"
