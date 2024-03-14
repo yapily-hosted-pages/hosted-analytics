@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Funnel } from "./shared/Funnel";
+import { institutionsCounts } from "./lib/institutions";
+import { InstitutionList } from "./shared/InstitutionList";
 
 const Title = ({ children }) => (
   <h1 className="text-2xl text-green-800 mb-3">{children}</h1>
@@ -40,11 +42,11 @@ export const ConsentsDashboard = ({ consents }) => {
       <div className="flex flex-row gap-8">
         <Container>
           <Title>Banks</Title>
-          {/* <InstitutionList
-            institutions={institutionsCounts(payments)}
+          <InstitutionList
+            institutions={institutionsCounts(consents)}
             selectedInstitution={selectedInstitution}
             onInstitutionSelected={setSelectedInstitution}
-          /> */}
+          />
         </Container>
 
         <Container>

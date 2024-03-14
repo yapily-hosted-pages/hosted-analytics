@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { institutionsCounts } from "./lib/payments";
+import { institutionsCounts } from "./lib/institutions";
 import { InstitutionList } from "./shared/InstitutionList";
 import lookerScreenshot from "./assets/looker.png";
 import looker from "./lib/looker";

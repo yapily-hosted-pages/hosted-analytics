@@ -63,27 +63,3 @@ export const readPayments = (logs) => {
 
   return [...payments.values()];
 };
-
-export const institutionsCounts = (payments) =>
-  [
-    ...payments
-      .filter(({ institution }) => institution)
-      .reduce((institutions, payment) => {
-        const institutionCounts = institutions.get(payment.institution) || {
-          id: payment.institution,
-          total: 0,
-          completed: 0,
-        };
-        institutionCounts.total++;
-        if (
-          payment.steps.includes(AUTH_STEPS.EXECUTED) ||
-          (payment.flow === AUTH_FLOWS.EMBEDDED &&
-            payment.steps.includes(AUTH_STEPS.AUTHORISATION_UPDATED))
-        ) {
-          institutionCounts.completed++;
-        }
-        institutions.set(payment.institution, institutionCounts);
-        return institutions;
-      }, new Map())
-      .values(),
-  ].sort((a, b) => b.total - a.total);
