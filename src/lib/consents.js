@@ -1,16 +1,4 @@
-export const CONSENT_STEPS = {
-  CREATED: "created",
-  INSTITUTION_SUBMITTED: "institution_submitted",
-  AUTHORISATION_INITIATED: "authorisation_initiated",
-  AUTHORISATION_UPDATED: "authorisation_updated",
-  CONSENT_EXECUTED: "consent_executed",
-};
-
-export const CONSENT_FLOWS = {
-  UNKNOWN: "unknown",
-  EMBEDDED: "embedded",
-  REDIRECT: "redirect",
-};
+import { AUTH_FLOWS, AUTH_STEPS } from "./constants";
 
 const extractUUID = (url) => {
   const regex = /\/ais\/consent-requests\/([a-f0-9-]+)\//;
@@ -44,9 +32,9 @@ export const readConsents = (logs) => {
         uuid,
         institution: extractInstitutionId(log.message),
         flow: log.message.includes("embedded")
-          ? CONSENT_FLOWS.EMBEDDED
-          : CONSENT_FLOWS.REDIRECT,
-        steps: [CONSENT_STEPS.CREATED, CONSENT_STEPS.INSTITUTION_SUBMITTED],
+          ? AUTH_FLOWS.EMBEDDED
+          : AUTH_FLOWS.REDIRECT,
+        steps: [AUTH_STEPS.CREATED, AUTH_STEPS.INSTITUTION_SUBMITTED],
       });
 
       return institutionsSubmitted;
@@ -56,9 +44,9 @@ export const readConsents = (logs) => {
     const uuid = `unknown-${i}`;
     consents.set(uuid, {
       uuid,
-      institution: "unknown",
-      flow: CONSENT_FLOWS.UNKNOWN,
-      steps: [CONSENT_STEPS.CREATED],
+      institution: null,
+      flow: AUTH_FLOWS.UNKNOWN,
+      steps: [AUTH_STEPS.CREATED],
     });
   }
 
@@ -71,9 +59,9 @@ export const readConsents = (logs) => {
       });
 
   [
-    ["authorise", CONSENT_STEPS.AUTHORISATION_INITIATED],
-    ["data", CONSENT_STEPS.AUTHORISATION_UPDATED],
-    ["execute", CONSENT_STEPS.CONSENT_EXECUTED],
+    ["authorise", AUTH_STEPS.AUTHORISATION_INITIATED],
+    ["data", AUTH_STEPS.AUTHORISATION_UPDATED],
+    ["execute", AUTH_STEPS.EXECUTED],
   ].forEach(([path, step]) => addSteps(path, step));
 
   return [...consents.values()];

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Welcome } from "./welcome/Welcome";
-import { PaymentsDashboard } from "./payments/PaymentsDashboard";
-import { ConsentsDashboard } from "./consents/ConsentsDashboard";
+import { PaymentsDashboard } from "./PaymentsDashboard";
+import { ConsentsDashboard } from "./ConsentsDashboard";
 import { readPayments } from "./lib/payments";
 import { readConsents } from "./lib/consents";
 

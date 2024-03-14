@@ -1,3 +1,5 @@
+import { AUTH_STEPS, AUTH_FLOWS } from "./constants";
+
 const extractUUIDFromCreatedMessage = (message) => {
   const regex = /\[ ([a-f0-9-]+)\ ]/;
   const match = message.match(regex);
@@ -16,20 +18,6 @@ const extractInstitutionFromSubmitMessage = (message) => {
   return match ? match[1] : null;
 };
 
-export const PAYMENT_STEPS = {
-  CREATED: "created",
-  INSTITUTION_SUBMITTED: "institution_submitted",
-  AUTHORISATION_INITIATED: "authorisation_initiated",
-  AUTHORISATION_UPDATED: "authorisation_updated",
-  PAYMENT_EXECUTED: "payment_executed",
-};
-
-export const PAYMENT_FLOWS = {
-  UNKNOWN: "unknown",
-  EMBEDDED: "embedded",
-  REDIRECT: "redirect",
-};
-
 export const readPayments = (logs) => {
   const payments = logs
     .filter((log) => log.path === "/hosted/payment-requests")
@@ -38,7 +26,7 @@ export const readPayments = (logs) => {
       if (uuid) {
         payments.set(uuid, {
           uuid,
-          steps: [PAYMENT_STEPS.CREATED],
+          steps: [AUTH_STEPS.CREATED],
           flow: "unknown",
         });
       }
@@ -53,10 +41,8 @@ export const readPayments = (logs) => {
       const isEmbedded = log.message.includes("embedded-payment-auth-requests");
       const payment = payments.get(uuid);
       if (payment) {
-        payment.steps.push(PAYMENT_STEPS.INSTITUTION_SUBMITTED);
-        payment.flow = isEmbedded
-          ? PAYMENT_FLOWS.EMBEDDED
-          : PAYMENT_FLOWS.REDIRECT;
+        payment.steps.push(AUTH_STEPS.INSTITUTION_SUBMITTED);
+        payment.flow = isEmbedded ? AUTH_FLOWS.EMBEDDED : AUTH_FLOWS.REDIRECT;
         payment.institution = institution;
       }
     });
@@ -70,9 +56,9 @@ export const readPayments = (logs) => {
       });
 
   [
-    ["authorise", PAYMENT_STEPS.AUTHORISATION_INITIATED],
-    ["data", PAYMENT_STEPS.AUTHORISATION_UPDATED],
-    ["execute", PAYMENT_STEPS.PAYMENT_EXECUTED],
+    ["authorise", AUTH_STEPS.AUTHORISATION_INITIATED],
+    ["data", AUTH_STEPS.AUTHORISATION_UPDATED],
+    ["execute", AUTH_STEPS.EXECUTED],
   ].forEach(([path, step]) => addSteps(path, step));
 
   return [...payments.values()];
@@ -90,9 +76,9 @@ export const institutionsCounts = (payments) =>
         };
         institutionCounts.total++;
         if (
-          payment.steps.includes(PAYMENT_STEPS.PAYMENT_EXECUTED) ||
-          (payment.flow === PAYMENT_FLOWS.EMBEDDED &&
-            payment.steps.includes(PAYMENT_STEPS.AUTHORISATION_UPDATED))
+          payment.steps.includes(AUTH_STEPS.EXECUTED) ||
+          (payment.flow === AUTH_FLOWS.EMBEDDED &&
+            payment.steps.includes(AUTH_STEPS.AUTHORISATION_UPDATED))
         ) {
           institutionCounts.completed++;
         }

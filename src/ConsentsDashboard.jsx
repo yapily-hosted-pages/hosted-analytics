@@ -1,10 +1,5 @@
 import { useState } from "react";
-import { PaymentsFunnel } from "./PaymentsFunnel";
-import { institutionsCounts } from "../lib/payments";
-import { InstitutionList } from "../shared/InstitutionList";
-import lookerScreenshot from "../assets/looker.png";
-import looker from "../lib/looker";
-import gcp from "../lib/gcp";
+import { Funnel } from "./shared/Funnel";
 
 const Title = ({ children }) => (
   <h1 className="text-2xl text-green-800 mb-3">{children}</h1>
@@ -16,7 +11,7 @@ const Container = ({ children }) => (
   </div>
 );
 
-export const PaymentsDashboard = ({ payments, applicationId, start, end }) => {
+export const ConsentsDashboard = ({ consents }) => {
   const [selectedInstitution, setSelectedInstitution] = useState(null);
 
   return (
@@ -25,35 +20,36 @@ export const PaymentsDashboard = ({ payments, applicationId, start, end }) => {
         <Title>
           Funnel {selectedInstitution && `(${selectedInstitution})`}
         </Title>
-        <PaymentsFunnel
-          payments={
+        <Funnel
+          product="Consent"
+          items={
             selectedInstitution
-              ? payments.filter((p) => p.institution === selectedInstitution)
-              : payments
+              ? consents.filter((p) => p.institution === selectedInstitution)
+              : consents
           }
         />
-        <a
+        {/* <a
           className="text-red-500 hover:text-red-800 mt-6"
           href={gcp.payments.errorsUrl(applicationId, start, end)}
           target="_blank"
         >
           Open Error Logs in Cloud Console
-        </a>
+        </a> */}
       </Container>
 
       <div className="flex flex-row gap-8">
         <Container>
           <Title>Banks</Title>
-          <InstitutionList
+          {/* <InstitutionList
             institutions={institutionsCounts(payments)}
             selectedInstitution={selectedInstitution}
             onInstitutionSelected={setSelectedInstitution}
-          />
+          /> */}
         </Container>
 
         <Container>
           <Title>Looker</Title>
-          <div className="flex flex-col gap-3 max-w-xl">
+          {/* <div className="flex flex-col gap-3 max-w-xl">
             <p className="my-3">
               To understand the complete E2E conversion rate, please use the
               following{" "}
@@ -71,7 +67,7 @@ export const PaymentsDashboard = ({ payments, applicationId, start, end }) => {
               , and divide the total E2E number by the total requests created.
             </p>
             <img src={lookerScreenshot} />
-          </div>
+          </div> */}
         </Container>
       </div>
     </div>

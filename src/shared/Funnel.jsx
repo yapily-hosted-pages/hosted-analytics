@@ -4,28 +4,22 @@ import login from "../assets/login.png";
 import sca from "../assets/sca.png";
 import approvePayment from "../assets/approve-payment.png";
 import bankApp from "../assets/bank-app.png";
-import { PAYMENT_FLOWS, PAYMENT_STEPS } from "../lib/payments";
+import { AUTH_FLOWS, AUTH_STEPS } from "../lib/constants";
 
-export const PaymentsFunnel = ({ payments }) => {
-  const redirectPayments = payments.filter(
-    (payment) => payment.flow === PAYMENT_FLOWS.REDIRECT
-  );
-  const embeddedPayments = payments.filter(
-    (payment) => payment.flow === PAYMENT_FLOWS.EMBEDDED
-  );
+export const Funnel = ({ product, items }) => {
+  const redirect = items.filter(({ flow }) => flow === AUTH_FLOWS.REDIRECT);
+  const embedded = items.filter(({ flow }) => flow === AUTH_FLOWS.EMBEDDED);
 
-  const count = (payments, step) => {
-    console.log(payments);
-    return payments.filter((payment) => payment.steps.includes(step)).length;
-  };
+  const count = (items, step) =>
+    items.filter(({ steps }) => steps.includes(step)).length;
 
-  const totalCreated = count(payments, PAYMENT_STEPS.CREATED);
+  const totalCreated = count(items, AUTH_STEPS.CREATED);
 
   const pct = (count) =>
     `(${totalCreated > 0 ? Math.floor((count / totalCreated) * 100) : 0}%)`;
 
-  const Step = ({ payments, step, stepCountOverride, label }) => {
-    const stepCount = stepCountOverride || count(payments, step);
+  const Step = ({ items, step, computedStepCount, label }) => {
+    const stepCount = computedStepCount || count(items, step);
 
     return (
       <div className="p-2 h-28 w-48 flex justify-center items-center border border-green-800 rounded-md bg-green-50 text-center text-sm self-center">
@@ -42,8 +36,8 @@ export const PaymentsFunnel = ({ payments }) => {
     <div className="flex flex-row gap-3">{children}</div>
   );
 
-  const showEmbedded = embeddedPayments.length > 0;
-  const showRedirect = redirectPayments.length > 0;
+  const showEmbedded = embedded.length > 0;
+  const showRedirect = redirect.length > 0;
   const showTotal =
     (showEmbedded && showRedirect) || (!showEmbedded && !showRedirect);
 
@@ -51,8 +45,8 @@ export const PaymentsFunnel = ({ payments }) => {
     <div className="flex flex-row gap-3">
       <Steps>
         <Step
-          stepCountOverride={totalCreated}
-          label="Total hosted payment requests created"
+          computedStepCount={totalCreated}
+          label={`Total Hosted ${product} requests created`}
         />
         <StepPicture src={chooseYourBank} />
         <StepPicture src={reviewDetails} />
@@ -62,21 +56,21 @@ export const PaymentsFunnel = ({ payments }) => {
         {showRedirect && (
           <Steps>
             <Step
-              payments={redirectPayments}
-              step={PAYMENT_STEPS.INSTITUTION_SUBMITTED}
+              items={redirect}
+              step={AUTH_STEPS.INSTITUTION_SUBMITTED}
               label="Redirect institutions submitted"
             />
             <StepPicture src={approvePayment} />
             <Step
-              payments={redirectPayments}
-              step={PAYMENT_STEPS.AUTHORISATION_INITIATED}
+              items={redirect}
+              step={AUTH_STEPS.AUTHORISATION_INITIATED}
               label="Redirect authorisations created"
             />
             <StepPicture src={bankApp} />
             <Step
-              payments={redirectPayments}
-              step={PAYMENT_STEPS.PAYMENT_EXECUTED}
-              label="Redirect payments executed"
+              items={redirect}
+              step={AUTH_STEPS.EXECUTED}
+              label={`Redirect ${product}s executed`}
             />
           </Steps>
         )}
@@ -84,20 +78,20 @@ export const PaymentsFunnel = ({ payments }) => {
         {showEmbedded && (
           <Steps>
             <Step
-              payments={embeddedPayments}
-              step={PAYMENT_STEPS.INSTITUTION_SUBMITTED}
+              items={embedded}
+              step={AUTH_STEPS.INSTITUTION_SUBMITTED}
               label="Embedded institutions submitted"
             />
             <StepPicture src={login} />
             <Step
-              payments={embeddedPayments}
-              step={PAYMENT_STEPS.AUTHORISATION_INITIATED}
+              items={embedded}
+              step={AUTH_STEPS.AUTHORISATION_INITIATED}
               label="Embedded authorisations created"
             />
             <StepPicture src={sca} />
             <Step
-              payments={embeddedPayments}
-              step={PAYMENT_STEPS.AUTHORISATION_UPDATED}
+              items={embedded}
+              step={AUTH_STEPS.AUTHORISATION_UPDATED}
               label="Embedded SCA methods selected"
             />
           </Steps>
@@ -106,21 +100,21 @@ export const PaymentsFunnel = ({ payments }) => {
         {showTotal && (
           <Steps>
             <Step
-              payments={payments}
-              step={PAYMENT_STEPS.INSTITUTION_SUBMITTED}
+              items={items}
+              step={AUTH_STEPS.INSTITUTION_SUBMITTED}
               label="Total institutions submitted"
             />
             <Step
-              payments={payments}
-              step={PAYMENT_STEPS.AUTHORISATION_INITIATED}
+              items={items}
+              step={AUTH_STEPS.AUTHORISATION_INITIATED}
               label="Total authorisations created"
             />
             <Step
-              stepCountOverride={
-                count(redirectPayments, PAYMENT_STEPS.PAYMENT_EXECUTED) +
-                count(embeddedPayments, PAYMENT_STEPS.AUTHORISATION_UPDATED)
+              computedStepCount={
+                count(redirect, AUTH_STEPS.EXECUTED) +
+                count(embedded, AUTH_STEPS.AUTHORISATION_UPDATED)
               }
-              label="Total embedded SCA methods selected + Total redirect payments executed"
+              label={`Total embedded SCA methods selected + Total redirect ${product}s executed`}
             />
           </Steps>
         )}
